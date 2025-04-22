@@ -17,21 +17,32 @@
                 <th>Должность</th>
                 <th>Отдел</th>
                 <th>Дата приёма</th>
+                <th>Ставка</th>
+                <th>Количество часов</th>
                 <th>Зарплата</th>
                 <th>Действия</th>
             </tr>
         </thead>
         <tbody>
             <tr>
+                <td>1</td>
+                <td>Писька Писюнович Писькович</td>
+                <td>Минетчик</td>
+                <td>Минетов</td>
+                <td>1488</td>
+                <td>120</td>
+                <td>300</td>
+                <td>60000</td>
                 <td>
-                   
+                    <a asp-controller="Employees" asp-action="Edit" asp-route-id="1" class="btn btn-primary btn-sm">Редактировать</a>
+                    <button class="btn btn-danger btn-sm">Удалить</button>
                 </td>
             </tr>
-            <!-- Добавьте больше строк по мере необходимости -->
         </tbody>
     </table>
 
     <div class="text-center mt-4">
-        <button class="btn btn-success">Добавить сотрудника</button>
+        <a asp-controller="Employees" asp-action="Add" class="btn btn-success">Добавить сотрудника</a>
+        <a asp-controller="Employees" asp-action="TrackHours" class="btn btn-info">Учет часов</a>
     </div>
 </div>

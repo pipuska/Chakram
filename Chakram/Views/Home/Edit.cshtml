@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Редактирование сотрудника";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Редактирование данных сотрудника</h1>
+</div>
+
+<div class="container mt-5">
+    <form>
+        <input type="hidden" id="employeeId" value="1">
+
+        <div class="form-group">
+            <label for="fullName">ФИО</label>
+            <input type="text" class="form-control" id="fullName" value="Писька Писюнович Писькович">
+        </div>
+
+        <div class="form-group">
+            <label for="position">Должность</label>
+            <input type="text" class="form-control" id="position" value="Минетчик">
+        </div>
+
+        <div class="form-group">
+            <label for="department">Отдел</label>
+            <input type="text" class="form-control" id="department" value="Минетов">
+        </div>
+
+        <div class="form-group">
+            <label for="hireDate">Дата приёма</label>
+            <input type="date" class="form-control" id="hireDate" value="1488">
+        </div>
+
+        <div class="form-group">
+            <label for="rate">Ставка (руб/час)</label>
+            <input type="number" class="form-control" id="rate" value="120">
+        </div>
+
+        <div class="form-group">
+            <label for="hours">Количество часов</label>
+            <input type="number" class="form-control" id="hours" value="300">
+        </div>
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+            <a href="/" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
