@@ -1,48 +1,70 @@
-﻿@{
-    ViewData["Title"] = "Главная страница";
+﻿@model IEnumerable<Chakram.Models.Employee>
+@{
+    ViewData["Title"] = "Список сотрудников";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Добро пожаловать в систему учёта сотрудников</h1>
-    <p>Используйте таблицу ниже для управления данными сотрудников.</p>
-</div>
-
 <div class="container mt-5">
-    <h2>Список сотрудников</h2>
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>ФИО</th>
-                <th>Должность</th>
-                <th>Отдел</th>
-                <th>Дата приёма</th>
-                <th>Ставка</th>
-                <th>Количество часов</th>
-                <th>Зарплата</th>
-                <th>Действия</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>1</td>
-                <td>Писька Писюнович Писькович</td>
-                <td>Минетчик</td>
-                <td>Минетов</td>
-                <td>1488</td>
-                <td>120</td>
-                <td>300</td>
-                <td>60000</td>
-                <td>
-                    <a asp-controller="Employees" asp-action="Edit" asp-route-id="1" class="btn btn-primary btn-sm">Редактировать</a>
-                    <button class="btn btn-danger btn-sm">Удалить</button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <h2>@ViewData["Title"]</h2>
 
-    <div class="text-center mt-4">
-        <a asp-controller="Employees" asp-action="Add" class="btn btn-success">Добавить сотрудника</a>
-        <a asp-controller="Employees" asp-action="TrackHours" class="btn btn-info">Учет часов</a>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Фамилия</th>
+                    <th>Имя</th>
+                    <th>Отчество</th>
+                    <th>Должность</th>
+                    <th>Отдел</th>
+                    <th>Дата приёма</th>
+                    <th>Ставка</th>
+                    <th>Часы</th>
+                    <th>Зарплата</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    var currentRate = item.EmployeeRates?.OrderByDescending(r => r.EffectiveFrom).FirstOrDefault();
+                    var totalHours = item.WorkHours?.Where(wh => wh.IsApproved).Sum(wh => wh.HoursWorked) ?? 0;
+                    var salary = currentRate != null ? currentRate.Rate * totalHours : 0;
+
+                    <tr>
+                        <td>@item.EmployeeId</td>
+                        <td>@item.LastName</td>
+                        <td>@item.FirstName</td>
+                        <td>@item.MiddleName</td>
+                        <td>@item.Position?.PositionName</td>
+                        <td>@item.Department?.DepartmentName</td>
+                        <td>@item.HireDate.ToShortDateString()</td>
+                        <td>@(currentRate?.Rate.ToString("C") ?? "не указана")</td>
+                        <td>@totalHours.ToString("N2")</td>
+                        <td>@salary.ToString("C")</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.EmployeeId" class="btn btn-primary btn-sm">
+                                <i class="fas fa-edit"></i> Редактировать
+                            </a>
+                            <form asp-action="Delete" method="post" style="display:inline">
+                                <input type="hidden" name="id" value="@item.EmployeeId" />
+                                <button type="submit" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Вы уверены, что хотите удалить этого сотрудника?');">
+                                    <i class="fas fa-trash-alt"></i> Удалить
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+        <a asp-action="Add" class="btn btn-success">
+            <i class="fas fa-plus"></i> Добавить сотрудника
+        </a>
+        <a asp-action="track_hours" class="btn btn-info">
+            <i class="fas fa-clock"></i> Учет часов
+        </a>
     </div>
 </div>

@@ -1,0 +1,52 @@
+﻿@model IEnumerable<Chakram.Models.WorkHour>
+@{
+    ViewData["Title"] = "В рвзрвботке";
+    var employees = ViewBag.Employees as IEnumerable<dynamic> ?? new List<dynamic>();
+    var workHours = Model ?? new List<Chakram.Models.WorkHour>();
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">@ViewData["Title"]</h2>
+
+    <!-- Форма добавления часов -->
+    <form asp-action="AddWorkHours" method="post">
+        <div class="form-group">
+            <label>Сотрудник</label>
+            <select name="EmployeeId" class="form-control" required>
+                <option value="">-- Выберите сотрудника --</option>
+                @foreach (var emp in employees)
+                {
+                    <option value="@emp.EmployeeId">@emp.FullName</option>
+                }
+            </select>
+            @if (!employees.Any())
+            {
+                <div class="alert alert-warning mt-2">Нет доступных сотрудников</div>
+            }
+        </div>
+            <!-- Остальные поля формы -->
+        
+    </form>
+
+    <!-- Таблица с рабочими часами -->
+    <table class="table table-bordered table-striped">
+        <tbody>
+            @foreach (var item in workHours)
+            {
+                <tr>
+                    <td>
+                        @if (item.Employee != null)
+                        {
+                            @($"{item.Employee.LastName} {item.Employee.FirstName}")
+                        }
+                        else
+                        {
+                            <span class="text-muted">Сотрудник не найден</span>
+                        }
+                    </td>
+                    <!-- Остальные столбцы -->
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
