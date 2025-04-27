@@ -19,8 +19,9 @@ namespace Chakram.Models
         // Навигационные свойства
         public Position Position { get; set; }
         public Department Department { get; set; }
-        public ICollection<EmployeeRate> EmployeeRates { get; set; }
+        public virtual ICollection<EmployeeRate> EmployeeRates { get; set; }
         public ICollection<WorkHour> WorkHours { get; set; } // Добавьте это
+      
 
     }
 }

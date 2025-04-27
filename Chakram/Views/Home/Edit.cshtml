@@ -1,77 +1,76 @@
 ﻿@model Chakram.Models.Employee
 @{
     ViewData["Title"] = "Редактирование сотрудника";
-    var departments = ViewBag.Departments as IEnumerable<Department>;
-    var positions = ViewBag.Positions as IEnumerable<Position>;
-    var currentRate = ViewBag.CurrentRate as decimal?;
 }
 
 <div class="container mt-5">
     <form asp-action="Edit" method="post">
         <input type="hidden" asp-for="EmployeeId" />
 
-        <div class="form-group">
-            <label asp-for="LastName"></label>
-            <input asp-for="LastName" class="form-control" />
-            <span asp-validation-for="LastName" class="text-danger"></span>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="LastName" class="control-label"></label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="FirstName" class="control-label"></label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="MiddleName" class="control-label"></label>
+                    <input asp-for="MiddleName" class="form-control" />
+                    <span asp-validation-for="MiddleName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="HireDate" class="control-label"></label>
+                    <input asp-for="HireDate" type="date" class="form-control"
+                           value="@Model.HireDate.ToString("yyyy-MM-dd")" />
+                    <span asp-validation-for="HireDate" class="text-danger"></span>
+                </div>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label asp-for="FirstName"></label>
-            <input asp-for="FirstName" class="form-control" />
-            <span asp-validation-for="FirstName" class="text-danger"></span>
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="PositionId" class="control-label"></label>
+                    <select asp-for="PositionId" class="form-control"
+                            asp-items="@(new SelectList(ViewBag.Positions as IEnumerable<Position>, "PositionId", "PositionName"))">
+                        <option value="">-- Выберите должность --</option>
+                    </select>
+                    <span asp-validation-for="PositionId" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="DepartmentId" class="control-label"></label>
+                    <select asp-for="DepartmentId" class="form-control"
+                            asp-items="@(new SelectList(ViewBag.Departments as IEnumerable<Department>, "DepartmentId", "DepartmentName"))">
+                        <option value="">-- Выберите отдел --</option>
+                    </select>
+                    <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                </div>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label asp-for="MiddleName"></label>
-            <input asp-for="MiddleName" class="form-control" />
-            <span asp-validation-for="MiddleName" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="PositionId"></label>
-            <select asp-for="PositionId" class="form-control">
-                @foreach (var position in positions)
-                {
-                    <option value="@position.PositionId"
-                            selected="@(position.PositionId == Model.PositionId)">
-                        @position.PositionName
-                    </option>
-                }
-            </select>
-            <span asp-validation-for="PositionId" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="DepartmentId"></label>
-            <select asp-for="DepartmentId" class="form-control">
-                @foreach (var department in departments)
-                {
-                    <option value="@department.DepartmentId"
-                            selected="@(department.DepartmentId == Model.DepartmentId)">
-                        @department.DepartmentName
-                    </option>
-                }
-            </select>
-            <span asp-validation-for="DepartmentId" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="HireDate"></label>
-            <input asp-for="HireDate" type="date" class="form-control"
-                   value="@Model.HireDate.ToString("yyyy-MM-dd")" />
-            <span asp-validation-for="HireDate" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label>Ставка (руб/час)</label>
+        <div class="form-group mt-3">
+            <label>Текущая ставка (руб/час)</label>
             <input name="rate" type="number" step="0.01" class="form-control"
-                   value="@currentRate" />
+                   value="@(Model.EmployeeRates?.OrderByDescending(r => r.EffectiveFrom)?.FirstOrDefault()?.Rate)" />
         </div>
 
-        <div class="text-center mt-4">
+        <div class="form-group mt-4">
             <button type="submit" class="btn btn-primary">Сохранить изменения</button>
-            <a asp-action="Index" class="btn btn-secondary">Отмена</a>
+            <a asp-action="Index" class="btn btn-secondary ml-2">Отмена</a>
         </div>
     </form>
 </div>
