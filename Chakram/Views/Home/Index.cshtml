@@ -2,7 +2,14 @@
 @{
     ViewData["Title"] = "Список сотрудников";
 }
-
+<form method="get" asp-action="Index" class="mb-4">
+    <div class="input-group">
+        <input type="text" name="searchQuery" class="form-control" placeholder="Найти чела" value="@ViewBag.SearchQuery" />
+        <div class="input-group-append">
+            <button type="submit" class="btn btn-primary">Найти</button>
+        </div>
+    </div>
+</form>
 <div class="container mt-5">
     <h2>@ViewData["Title"]</h2>
 

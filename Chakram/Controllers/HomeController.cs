@@ -17,15 +17,30 @@ namespace Chakram.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchQuery)
         {
-            var employees = await _context.Employees
+            // Начинаем с базового запроса, включающего все необходимые связанные данные
+            var query = _context.Employees
                 .Include(e => e.Department)
                 .Include(e => e.Position)
                 .Include(e => e.EmployeeRates)
                 .Include(e => e.WorkHours)
-                .ToListAsync();
+                .AsQueryable(); // Превращаем в IQueryable для динамического построения запроса
 
+            // Если поисковый запрос не пустой
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                // Делаем поиск без учета регистра и по нескольким полям
+                query = query.Where(e =>
+                    EF.Functions.Like(e.FirstName, $"%{searchQuery}%") ||
+                    EF.Functions.Like(e.LastName, $"%{searchQuery}%") ||
+                    EF.Functions.Like(e.MiddleName ?? "", $"%{searchQuery}%"));
+            }
+
+            // Выполняем запрос и преобразуем в список
+            var employees = await query.ToListAsync();
+
+            // Передаем результаты в представление
             return View(employees);
         }
 
