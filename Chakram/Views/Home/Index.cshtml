@@ -2,14 +2,47 @@
 @{
     ViewData["Title"] = "Список сотрудников";
 }
+
 <form method="get" asp-action="Index" class="mb-4">
-    <div class="input-group">
-        <input type="text" name="searchQuery" class="form-control" placeholder="Найти чела" value="@ViewBag.SearchQuery" />
-        <div class="input-group-append">
-            <button type="submit" class="btn btn-primary">Найти</button>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label>Дата приема с:</label>
+                <input type="date" name="startDate" class="form-control"
+                       value="@ViewData["StartDate"]" />
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label>по:</label>
+                <input type="date" name="endDate" class="form-control"
+                       value="@ViewData["EndDate"]" />
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label>Поиск по имени:</label>
+                <div class="input-group">
+                    <input type="text" name="searchQuery" class="form-control"
+                           placeholder="ФИО" value="@ViewData["CurrentFilter"]" />
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-primary">Применить</button>
+                        <a asp-action="Index" class="btn btn-secondary">Сбросить</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+    <div class="alert alert-info mb-3">
+        Найдено <strong>@ViewBag.FilteredCount</strong> из <strong>@ViewBag.TotalCount</strong> сотрудников
+        @if (ViewBag.FilteredCount < ViewBag.TotalCount)
+        {
+            <a asp-action="Index" class="btn btn-sm btn-outline-secondary ml-2">Сбросить фильтры</a>
+        }
+    </div>
+
 </form>
+
 <div class="container mt-5">
     <h2>@ViewData["Title"]</h2>
 
@@ -18,12 +51,26 @@
             <thead class="thead-dark">
                 <tr>
                     <th>ID</th>
-                    <th>Фамилия</th>
-                    <th>Имя</th>
-                    <th>Отчество</th>
+                    <th>ФИО</th>
                     <th>Должность</th>
                     <th>Отдел</th>
-                    <th>Дата приёма</th>
+                    <th>
+                        <a asp-action="Index"
+                           asp-route-sortOrder="@ViewData["DateSortParam"]"
+                           asp-route-searchQuery="@ViewData["CurrentFilter"]"
+                           asp-route-startDate="@ViewData["StartDate"]"
+                           asp-route-endDate="@ViewData["EndDate"]">
+                            Дата приёма
+                            @if ((string)ViewData["DateSortParam"] == "date_asc")
+                            {
+                                <i class="fas fa-sort-up"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-sort-down"></i>
+                            }
+                        </a>
+                    </th>
                     <th>Ставка</th>
                     <th>Часы</th>
                     <th>Зарплата</th>
@@ -39,24 +86,22 @@
 
                     <tr>
                         <td>@item.EmployeeId</td>
-                        <td>@item.LastName</td>
-                        <td>@item.FirstName</td>
-                        <td>@item.MiddleName</td>
+                        <td>@item.LastName @item.FirstName @item.MiddleName</td>
                         <td>@item.Position?.PositionName</td>
                         <td>@item.Department?.DepartmentName</td>
-                        <td>@item.HireDate.ToShortDateString()</td>
+                        <td>@item.HireDate.ToString("dd.MM.yyyy")</td>
                         <td>@(currentRate?.Rate.ToString("C") ?? "не указана")</td>
                         <td>@totalHours.ToString("N2")</td>
                         <td>@salary.ToString("C")</td>
                         <td>
                             <a asp-action="Edit" asp-route-id="@item.EmployeeId" class="btn btn-primary btn-sm">
-                                <i class="fas fa-edit"></i> Редактировать
+                                <i class="fas fa-edit"></i>
                             </a>
                             <form asp-action="Delete" method="post" style="display:inline">
                                 <input type="hidden" name="id" value="@item.EmployeeId" />
                                 <button type="submit" class="btn btn-danger btn-sm"
-                                        onclick="return confirm('Вы уверены, что хотите удалить этого сотрудника?');">
-                                    <i class="fas fa-trash-alt"></i> Удалить
+                                        onclick="return confirm('Удалить сотрудника?');">
+                                    <i class="fas fa-trash-alt"></i>
                                 </button>
                             </form>
                         </td>
@@ -70,8 +115,17 @@
         <a asp-action="Add" class="btn btn-success">
             <i class="fas fa-plus"></i> Добавить сотрудника
         </a>
-        <a asp-action="track_hours" class="btn btn-info">
-            <i class="fas fa-clock"></i> Учет часов
-        </a>
+        <div>
+            <a asp-action="ExportToExcel"
+               asp-route-searchQuery="@ViewData["CurrentFilter"]"
+               asp-route-startDate="@ViewData["StartDate"]"
+               asp-route-endDate="@ViewData["EndDate"]"
+               class="btn btn-success">
+                <i class="fas fa-file-excel"></i> Экспорт в Excel
+            </a>
+            <a asp-action="ExportToPdf" class="btn btn-danger">
+                <i class="fas fa-file-pdf"></i> PDF
+            </a>
+        </div>
     </div>
 </div>
